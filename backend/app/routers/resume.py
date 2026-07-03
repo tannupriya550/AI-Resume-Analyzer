@@ -1,11 +1,12 @@
 from fastapi import APIRouter, UploadFile, File, Form
 import os
-import shutil
+print(">>> NEW resume.py LOADED <<<")
 
 from app.services.pdf_service import extract_text_from_pdf
 from app.services.skill_service import extract_skills
 from app.services.ats import calculate_ats_score
 from app.services.semantic_match import semantic_similarity
+from app.services.suggestion_service import generate_suggestions
 
 router = APIRouter()
 
@@ -22,27 +23,49 @@ async def upload_resume(
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
 
     with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        buffer.write(await file.read())
 
-    # Extract text from resume
+    # Extract text from PDF
     extracted_text = extract_text_from_pdf(file_path)
 
-    # Extract skills
+    # Extract skills from resume
     detected_skills = extract_skills(extracted_text)
 
-    # Calculate ATS score
-    ats_result = calculate_ats_score(extracted_text, job_description)
+    # Calculate ATS keyword score
+    ats_result = calculate_ats_score(
+        extracted_text,
+        job_description
+    )
+
+    keyword_score = ats_result["ats_score"]
+
+    # Calculate semantic similarity score
     semantic_score = semantic_similarity(
-    extracted_text,
-    job_description
-)
+        extracted_text,
+        job_description
+    )
+
+    # Final AI Score
+    final_ai_score = round(
+        (keyword_score * 0.4) + (semantic_score * 0.6),
+        2
+    )
+
+    # Generate suggestions
+    suggestions = generate_suggestions(
+        ats_result["matched_skills"],
+        ats_result["missing_skills"],
+        final_ai_score
+    )
 
     return {
-        "message": "Resume uploaded successfully!",
-        "filename": file.filename,
-        "resume_skills": detected_skills,
-        "ats_score": ats_result["ats_score"],
-        "semantic_score": semantic_score,
-        "matched_skills": ats_result["matched_skills"],
-        "missing_skills": ats_result["missing_skills"]
-    }
+    "message": "Resume uploaded successfully!",
+    "filename": file.filename,
+    "resume_skills": detected_skills,
+    "keyword_score": keyword_score,
+    "semantic_score": semantic_score,
+    "final_ai_score": final_ai_score,
+    "matched_skills": ats_result["matched_skills"],
+    "missing_skills": ats_result["missing_skills"],
+    "suggestions": suggestions
+}
