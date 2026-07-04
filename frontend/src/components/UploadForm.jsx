@@ -1,4 +1,6 @@
 import { useState } from "react";
+import FileDrop from "./FileDrop";
+import { toast } from "react-toastify";
 
 function UploadForm({ onAnalyze }) {
   const [resume, setResume] = useState(null);
@@ -8,12 +10,12 @@ function UploadForm({ onAnalyze }) {
     e.preventDefault();
 
     if (!resume) {
-      alert("Please upload a resume.");
+      toast.error("Please upload a resume.");
       return;
     }
 
     if (!jobDescription.trim()) {
-      alert("Please enter a job description.");
+      toast.warning("Please enter a job description.");
       return;
     }
 
@@ -22,14 +24,14 @@ function UploadForm({ onAnalyze }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>AI Resume Analyzer</h2>
+      <h2>🤖 AI Resume Analyzer</h2>
 
       <label>Upload Resume (PDF)</label>
 
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={(e) => setResume(e.target.files[0])}
+      {/* Drag & Drop Upload */}
+      <FileDrop
+        file={resume}
+        setFile={setResume}
       />
 
       <label>Job Description</label>

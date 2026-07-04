@@ -1,3 +1,4 @@
+import DownloadButton from "./components/DownloadButton";
 import { useState } from "react";
 import Background from "./components/Background";
 import Navbar from "./components/Navbar";
@@ -7,7 +8,13 @@ import SkillList from "./components/SkillList";
 import Suggestions from "./components/Suggestions";
 import OverallScore from "./components/OverallScore";
 import StatsCards from "./components/StatsCards";
+import LoadingScreen from "./components/LoadingScreen";
+import AIReview from "./components/AIReview";
+
 import API from "./services/api";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [result, setResult] = useState(null);
@@ -27,9 +34,12 @@ function App() {
       );
 
       setResult(response.data);
+
+      toast.success("Resume analyzed successfully!");
     } catch (error) {
       console.error(error);
-      alert("Something went wrong!");
+
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -43,7 +53,7 @@ function App() {
 
       <div className="container">
 
-        {/* Hero Section */}
+        {/* Hero */}
         <div className="hero">
           <h1>🤖 AI Resume Analyzer</h1>
 
@@ -56,28 +66,22 @@ function App() {
         <UploadForm onAnalyze={analyzeResume} />
 
         {/* Loading */}
-        {loading && (
-          <h2
-            style={{
-              textAlign: "center",
-              marginTop: "30px",
-            }}
-          >
-            Analyzing Resume...
-          </h2>
-        )}
+        {loading && <LoadingScreen />}
 
         {/* Results */}
         {result && (
           <>
             <hr />
 
+            {/* Overall Score */}
             <OverallScore
               score={result.final_ai_score}
             />
 
+            {/* Statistics */}
             <StatsCards result={result} />
 
+            {/* Individual Scores */}
             <div className="score-container">
 
               <ScoreCard
@@ -97,6 +101,7 @@ function App() {
 
             </div>
 
+            {/* Skills */}
             <SkillList
               title="Resume Skills"
               skills={result.resume_skills}
@@ -112,13 +117,28 @@ function App() {
               skills={result.missing_skills}
             />
 
+            {/* Suggestions */}
             <Suggestions
-              suggestions={result.suggestions}
-            />
+  suggestions={result.suggestions}
+/>
+
+{result.ai_review && (
+  <>
+    <AIReview review={result.ai_review} />
+
+    <DownloadButton result={result} />
+  </>
+)}
           </>
         )}
-
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="dark"
+      />
     </>
   );
 }

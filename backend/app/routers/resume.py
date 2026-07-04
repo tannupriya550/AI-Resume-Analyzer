@@ -1,3 +1,4 @@
+from app.services.gemini_service import generate_ai_review
 from fastapi import APIRouter, UploadFile, File, Form
 import os
 print(">>> NEW resume.py LOADED <<<")
@@ -57,15 +58,26 @@ async def upload_resume(
         ats_result["missing_skills"],
         final_ai_score
     )
+    ai_review = generate_ai_review(
+    extracted_text,
+    job_description
+)
+    print(ai_review)
 
     return {
     "message": "Resume uploaded successfully!",
     "filename": file.filename,
+
     "resume_skills": detected_skills,
+
     "keyword_score": keyword_score,
     "semantic_score": semantic_score,
     "final_ai_score": final_ai_score,
+
     "matched_skills": ats_result["matched_skills"],
     "missing_skills": ats_result["missing_skills"],
-    "suggestions": suggestions
+
+    "suggestions": suggestions,
+
+    "ai_review": ai_review
 }
