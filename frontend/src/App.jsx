@@ -1,9 +1,12 @@
+import Background from "./components/Background";
 import { useState } from "react";
 import UploadForm from "./components/UploadForm";
 import ScoreCard from "./components/ScoreCard";
 import SkillList from "./components/SkillList";
 import Suggestions from "./components/Suggestions";
 import API from "./services/api";
+import OverallScore from "./components/OverallScore";
+import StatsCards from "./components/StatsCards";
 
 function App() {
   const [result, setResult] = useState(null);
@@ -31,6 +34,19 @@ function App() {
       setLoading(false);
     }
   };
+  <>
+  <Background />
+
+  <div className="container">
+
+    {/* Hero */}
+
+    {/* Upload */}
+
+    {/* Results */}
+
+  </div>
+</>
 
   return (
     <div className="container">
@@ -56,6 +72,12 @@ function App() {
           <hr />
 
           <div className="score-container">
+            {result && (
+    <OverallScore
+        score={result.final_ai_score}
+    />
+)}
+{result && <StatsCards result={result} />}
 
             <ScoreCard
               title="Keyword Score"
