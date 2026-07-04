@@ -1,12 +1,13 @@
-import Background from "./components/Background";
 import { useState } from "react";
+import Background from "./components/Background";
+import Navbar from "./components/Navbar";
 import UploadForm from "./components/UploadForm";
 import ScoreCard from "./components/ScoreCard";
 import SkillList from "./components/SkillList";
 import Suggestions from "./components/Suggestions";
-import API from "./services/api";
 import OverallScore from "./components/OverallScore";
 import StatsCards from "./components/StatsCards";
+import API from "./services/api";
 
 function App() {
   const [result, setResult] = useState(null);
@@ -17,7 +18,6 @@ function App() {
       setLoading(true);
 
       const formData = new FormData();
-
       formData.append("file", resume);
       formData.append("job_description", jobDescription);
 
@@ -34,91 +34,92 @@ function App() {
       setLoading(false);
     }
   };
-  <>
-  <Background />
-
-  <div className="container">
-
-    {/* Hero */}
-
-    {/* Upload */}
-
-    {/* Results */}
-
-  </div>
-</>
 
   return (
-    <div className="container">
+    <>
+      <Background />
 
-      <div className="hero">
-  <h1>🤖 AI Resume Analyzer</h1>
+      <Navbar />
 
-  <p>
-    Upload your resume and compare it with any job description using AI.
-  </p>
-</div>
+      <div className="container">
 
-      <UploadForm onAnalyze={analyzeResume} />
+        {/* Hero Section */}
+        <div className="hero">
+          <h1>🤖 AI Resume Analyzer</h1>
 
-      {loading && (
-        <h2 style={{ textAlign: "center", marginTop: "30px" }}>
-          Analyzing Resume...
-        </h2>
-      )}
+          <p>
+            Upload your resume and compare it with any job description using AI.
+          </p>
+        </div>
 
-      {result && (
-        <>
-          <hr />
+        {/* Upload Form */}
+        <UploadForm onAnalyze={analyzeResume} />
 
-          <div className="score-container">
-            {result && (
-    <OverallScore
-        score={result.final_ai_score}
-    />
-)}
-{result && <StatsCards result={result} />}
+        {/* Loading */}
+        {loading && (
+          <h2
+            style={{
+              textAlign: "center",
+              marginTop: "30px",
+            }}
+          >
+            Analyzing Resume...
+          </h2>
+        )}
 
-            <ScoreCard
-              title="Keyword Score"
-              score={result.keyword_score}
-            />
+        {/* Results */}
+        {result && (
+          <>
+            <hr />
 
-            <ScoreCard
-              title="Semantic Score"
-              score={result.semantic_score}
-            />
-
-            <ScoreCard
-              title="Final AI Score"
+            <OverallScore
               score={result.final_ai_score}
             />
 
-          </div>
+            <StatsCards result={result} />
 
-          <SkillList
-            title="Resume Skills"
-            skills={result.resume_skills}
-          />
+            <div className="score-container">
 
-          <SkillList
-            title="Matched Skills"
-            skills={result.matched_skills}
-          />
+              <ScoreCard
+                title="Keyword Score"
+                score={result.keyword_score}
+              />
 
-          <SkillList
-            title="Missing Skills"
-            skills={result.missing_skills}
-          />
+              <ScoreCard
+                title="Semantic Score"
+                score={result.semantic_score}
+              />
 
-          <Suggestions
-            suggestions={result.suggestions}
-          />
+              <ScoreCard
+                title="Final AI Score"
+                score={result.final_ai_score}
+              />
 
-        </>
-      )}
+            </div>
 
-    </div>
+            <SkillList
+              title="Resume Skills"
+              skills={result.resume_skills}
+            />
+
+            <SkillList
+              title="Matched Skills"
+              skills={result.matched_skills}
+            />
+
+            <SkillList
+              title="Missing Skills"
+              skills={result.missing_skills}
+            />
+
+            <Suggestions
+              suggestions={result.suggestions}
+            />
+          </>
+        )}
+
+      </div>
+    </>
   );
 }
 
