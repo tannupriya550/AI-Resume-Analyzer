@@ -6,7 +6,6 @@ print(">>> NEW resume.py LOADED <<<")
 from app.services.pdf_service import extract_text_from_pdf
 from app.services.skill_service import extract_skills
 from app.services.ats import calculate_ats_score
-from app.services.semantic_match import semantic_similarity
 from app.services.suggestion_service import generate_suggestions
 
 router = APIRouter()
@@ -41,10 +40,7 @@ async def upload_resume(
     keyword_score = ats_result["ats_score"]
 
     # Calculate semantic similarity score
-    semantic_score = semantic_similarity(
-        extracted_text,
-        job_description
-    )
+    semantic_score = 0
 
     # Final AI Score
     final_ai_score = round(
